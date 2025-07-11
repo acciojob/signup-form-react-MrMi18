@@ -85,7 +85,7 @@ const App = () => {
         <br></br>
         <button type="submit" data-testid='submit'> Submit</button>
       </form>
-      {errorMessage && <p>{errorMessage}</p>}
+      {errorMessage && <span>{errorMessage}</span>}
     </div>
   )
 }
