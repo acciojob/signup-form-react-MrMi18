@@ -39,7 +39,7 @@ const App = () => {
     setFormData({ name: "", email: "", password: "", gender: "", phoneNumber: "" });
 
   }
-  if (user) return <h1> Hello {user}</h1>
+  if (user) return <h2> Hello {user}</h2>
   return (
     <div id="main">
       <form onSubmit={onSubmit}>
