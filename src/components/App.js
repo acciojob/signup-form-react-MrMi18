@@ -3,91 +3,150 @@ import '../styles/App.css';
 
 
 const App = () => {
-  const [formData, setFormData] = useState({ name: "", email: "", password: "", gender: "", phoneNumber: "" })
-  const [errorMessage, setErrorMessage] = useState();
-  const [user, setUser] = useState();
-  const onSubmit = (e) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    gender: '',
+    phoneNumber: '',
+    password: '',
+  });
+
+  const [errors, setErrors] = useState({ err: '' });
+
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    for (let key in formData) {
-      if (!formData[key]) {
-        setErrorMessage(`${key} Error: All fields are mandatory.`);
-        return;
-      }
-    }
-    if (/^[a-zA-Z0-9]+$/.test(formData.name)) {
-      setErrorMessage("Name must be alphanumeric.");
+
+    // Clear previous errors
+    setErrors({ err: '' });
+
+    // Validate form fields
+    if (!formData.name || !formData.email || !formData.phoneNumber || !formData.password) {
+      setErrors({ err: 'All fields are mandatory' });
+      setSubmitted(false);
       return;
     }
 
-    else if (!formData.email.includes("@")) {
-      setErrorMessage("Email must contain @.");
-      return;
-    } else if (!["male", "female", "other"].includes(formData.gender)) {
-      setErrorMessage("Please identify as male, female or other.");
+    if (!/^[a-zA-Z0-9 ]+$/.test(formData.name)) {
+      setErrors({ err: 'Name is not alphanumeric' });
+      setSubmitted(false);
       return;
     }
-    else if (!/^\d+$/.test(formData.phoneNumber)) {
-      setErrorMessage("Phone Number must contain only digits.");
-      return;
-    }
-    else if (formData.password.length < 6) {
-      setErrorMessage("Password must contain atleast 6 letters");
-      return;
-    }
-    setUser(formData.email.split('@')[0]);
-    setErrorMessage("")
-    setFormData({ name: "", email: "", password: "", gender: "", phoneNumber: "" });
 
-  }
-  if (user) return <h2> Hello {user}</h2>
+    if (!formData.email.includes('@')) {
+      setErrors({ err: 'email must contain @' });
+      setSubmitted(false);
+      return;
+    }
+
+    if (!/^\d+$/.test(formData.phoneNumber)) {
+      setErrors({ err: 'Phone Number must contain only numbers' });
+      setSubmitted(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setErrors({ err: 'Password must contain atleast 6 letters' });
+      setSubmitted(false);
+      return;
+    }
+
+    if (![].includes(formData.gender)) {
+      setErrors({ err: 'Please identify as male, female or others' });
+      setSubmitted(false);
+    }
+
+    // Extract username from email
+    const username = formData.email.split('@')[0];
+
+    // Display welcome message
+    setSubmitted(true);
+    alert(`Hello ${username}`);
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ err: '' }); // Clear the error when the user starts typing
+  };
+
   return (
-    <div id="main">
-      <form onSubmit={onSubmit}>
-        <label htmlFor="name">name</label>
-        <input type="text" data-testid='name' value={formData.name}
-          onChange={(e) => {
-            e.persist();
-            setFormData((pre) => ({ ...pre, name: e.target.value }));
-          }}
+    <div>
+      <form onSubmit={handleSubmit}>
+        <span style={{ color: 'red' }}>{errors.err}</span>
+        <br />
+        <label>
+          Name:
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            data-testid="name"
+          />
+        </label>
+        <br />
 
-        ></input>
-        <br></br>
-        <label htmlFor="email">Email</label>
-        <input type="text" data-testid='email' value={formData.email} onChange={(e) => {
-          e.persist();
-          setFormData((pre) => ({ ...pre, email: e.target.value }));
-        }}></input>
-        <br></br>
-        <label htmlFor="password">password</label>
-        <input type="text" data-testid='password' value={formData.password}
-          onChange={(e) => {
-            e.persist();
-            setFormData((pre) => ({ ...pre, password: e.target.value }));
-          }}></input>
-        <br></br>
+        <label>
+          Email address:
+          <input
+            type="text"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            data-testid="email"
+          />
+        </label>
+        <br />
 
-        <select data-testid='gender'  value={formData.gender}
-          onChange={(e) => {
-            e.persist();
-            setFormData((pre) => ({ ...pre, gender: e.target.value }));
-          }}>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">others</option>
-        </select>
-        <br></br>
-        <label htmlFor="phoneNumber">Phone Number</label>
-        <input type="text" data-testid='phoneNumber' value={formData.phoneNumber}
-          onChange={(e) => {
-            e.persist();
-            setFormData((pre) => ({ ...pre, phoneNumber: e.target.value }));
-          }}></input>
-        <br></br>
-        <button type="submit" data-testid='submit'> Submit</button>
+        <label>
+          Gender:
+          <select
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            data-testid="gender"
+          >
+            <option value="">Please select your gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <br />
+
+        <label>
+          Phone Number:
+          <input
+            type="text"
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            data-testid="phoneNumber"
+          />
+        </label>
+        <br />
+
+        <label>
+          Password:
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            data-testid="password"
+          />
+        </label>
+        <br />
+
+        <button type="submit" data-testid="submit">
+          Submit
+        </button>
       </form>
-      {errorMessage && <span>{errorMessage}</span>}
+
+      {submitted && <h2>Hello {formData.name}</h2>}
     </div>
-  )
+  );
 }
 
 
